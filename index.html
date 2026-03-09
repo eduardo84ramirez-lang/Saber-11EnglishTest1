@@ -1,335 +1,1320 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Saber 11 - English Practice Test</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
-        .question-card { transition: all 0.3s ease; }
-        .option-label { cursor: pointer; display: block; padding: 10px; border: 2px solid #e2e8f0; border-radius: 8px; margin-bottom: 8px; }
-        .option-input:checked + .option-label { border-color: #3b82f6; background-color: #eff6ff; }
-        .hidden { display: none; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saber 11° · English Practice</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --red: #C8102E;
+    --teal: #00AABB;
+    --dark: #1A1A2E;
+    --light: #F5F3EE;
+    --card: #FFFFFF;
+    --border: #E2DDD6;
+    --text: #2C2C3A;
+    --muted: #7A7A8A;
+    --correct: #1DB954;
+    --wrong: #E53935;
+    --shadow: 0 4px 24px rgba(0,0,0,0.08);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--light);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .site-header {
+    background: var(--dark);
+    color: #fff;
+    padding: 0;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.25);
+  }
+  .header-inner {
+    max-width: 900px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 24px;
+  }
+  .logo { display: flex; align-items: center; gap: 12px; }
+  .logo-badge {
+    background: var(--red); color: #fff;
+    font-family: 'Playfair Display', serif; font-size: 11px; font-weight: 700;
+    letter-spacing: 1px; text-transform: uppercase;
+    padding: 6px 10px; border-radius: 4px;
+  }
+  .logo-text { font-size: 13px; color: rgba(255,255,255,0.7); letter-spacing: 0.5px; }
+  .progress-pill {
+    background: rgba(255,255,255,0.1); border-radius: 20px;
+    padding: 6px 16px; font-size: 13px; color: rgba(255,255,255,0.8);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .progress-pill span { color: var(--teal); font-weight: 700; }
+
+  /* ── MAIN WRAPPER ── */
+  .wrapper { max-width: 900px; margin: 0 auto; padding: 0 20px 60px; }
+
+  /* ── WELCOME SCREEN ── */
+  #welcome-screen {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; min-height: 80vh; text-align: center;
+    padding: 40px 20px;
+  }
+  .welcome-badge {
+    background: var(--teal); color: #fff;
+    font-size: 11px; font-weight: 600; letter-spacing: 2px;
+    text-transform: uppercase; padding: 6px 16px; border-radius: 20px;
+    margin-bottom: 24px; display: inline-block;
+  }
+  .welcome-title {
+    font-family: 'Playfair Display', serif; font-size: clamp(36px, 6vw, 64px);
+    font-weight: 900; line-height: 1.1; color: var(--dark);
+    margin-bottom: 16px;
+  }
+  .welcome-title em { color: var(--red); font-style: normal; }
+  .welcome-sub {
+    font-size: 16px; color: var(--muted); max-width: 520px;
+    line-height: 1.7; margin-bottom: 40px;
+  }
+  .name-card {
+    background: var(--card); border-radius: 20px;
+    padding: 36px 40px; box-shadow: var(--shadow);
+    width: 100%; max-width: 460px;
+    border: 1px solid var(--border);
+  }
+  .name-card label {
+    display: block; font-size: 13px; font-weight: 600;
+    letter-spacing: 0.5px; color: var(--muted); margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+  .name-card input {
+    width: 100%; padding: 14px 18px; border-radius: 12px;
+    border: 2px solid var(--border); font-size: 17px;
+    font-family: 'DM Sans', sans-serif; color: var(--dark);
+    outline: none; transition: border-color .2s;
+    background: var(--light);
+  }
+  .name-card input:focus { border-color: var(--teal); }
+  .btn-start {
+    margin-top: 20px; width: 100%;
+    background: var(--red); color: #fff;
+    border: none; border-radius: 12px;
+    padding: 16px; font-size: 15px; font-weight: 600;
+    cursor: pointer; letter-spacing: 0.3px;
+    transition: transform .15s, box-shadow .15s;
+  }
+  .btn-start:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(200,16,46,0.3); }
+  .info-row {
+    display: flex; gap: 20px; margin-top: 28px;
+    justify-content: center; flex-wrap: wrap;
+  }
+  .info-chip {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 13px; color: var(--muted);
+  }
+  .info-chip svg { flex-shrink: 0; }
+
+  /* ── EXAM SCREEN ── */
+  #exam-screen { display: none; padding-top: 32px; }
+
+  /* ── SECTION HEADER ── */
+  .section-header {
+    display: flex; align-items: center; gap: 16px;
+    padding: 22px 28px; background: var(--dark);
+    border-radius: 16px; margin-bottom: 24px; color: #fff;
+  }
+  .section-num {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--red); display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .section-info { flex: 1; }
+  .section-title {
+    font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700;
+  }
+  .section-desc { font-size: 13px; color: rgba(255,255,255,0.6); margin-top: 2px; }
+  .section-tag {
+    background: var(--teal); color: #fff; font-size: 11px; font-weight: 700;
+    padding: 4px 10px; border-radius: 20px; letter-spacing: 1px;
+    text-transform: uppercase; white-space: nowrap;
+  }
+
+  /* ── INSTRUCTION BOX ── */
+  .instruction-box {
+    background: #EBF8FF; border-left: 4px solid var(--teal);
+    border-radius: 0 12px 12px 0; padding: 16px 20px;
+    font-size: 14px; color: #0D5C75; line-height: 1.6;
+    margin-bottom: 28px;
+  }
+
+  /* ── MATCHING TABLE (Part 1) ── */
+  .match-layout {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+    margin-bottom: 28px;
+  }
+  .match-col { background: var(--card); border-radius: 16px; padding: 24px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+  .match-col-title {
+    font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 16px;
+    padding-bottom: 10px; border-bottom: 2px solid var(--border);
+  }
+  .match-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 0; border-bottom: 1px solid var(--border);
+  }
+  .match-item:last-child { border-bottom: none; }
+  .match-num {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--light); display: flex; align-items: center;
+    justify-content: center; font-size: 12px; font-weight: 700;
+    color: var(--red); flex-shrink: 0;
+  }
+  .match-letter {
+    width: 28px; height: 28px; border-radius: 6px;
+    background: var(--light); display: flex; align-items: center;
+    justify-content: center; font-size: 12px; font-weight: 700;
+    color: var(--dark); flex-shrink: 0;
+  }
+  .match-text { font-size: 14px; color: var(--text); line-height: 1.4; }
+  .match-answer-row {
+    display: flex; align-items: center; gap: 8px; padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .match-answer-row:last-child { border-bottom: none; }
+  .match-answer-label { font-size: 13px; color: var(--muted); min-width: 60px; font-weight: 600; }
+  .match-select {
+    border: 2px solid var(--border); border-radius: 8px;
+    padding: 6px 10px; font-size: 14px; font-family: 'DM Sans', sans-serif;
+    color: var(--dark); background: var(--light); outline: none;
+    cursor: pointer; transition: border-color .2s;
+  }
+  .match-select:focus { border-color: var(--teal); }
+
+  /* ── SIGN CARD (Part 2) ── */
+  .sign-card {
+    background: var(--card); border-radius: 20px; padding: 28px;
+    box-shadow: var(--shadow); border: 1px solid var(--border);
+    margin-bottom: 20px;
+  }
+  .sign-display {
+    background: #F0F4F8;
+    border: 2px dashed #B0C4D8;
+    border-radius: 12px; padding: 24px 20px;
+    text-align: center; margin-bottom: 20px;
+    font-family: Georgia, serif; font-size: 17px; line-height: 1.6;
+    color: #334;
+  }
+  .sign-q { font-size: 14px; color: var(--muted); margin-bottom: 4px; }
+  .sign-q strong { color: var(--dark); }
+
+  /* ── CONVERSATION (Part 3) ── */
+  .conversation-card {
+    background: var(--card); border-radius: 20px; padding: 28px;
+    box-shadow: var(--shadow); border: 1px solid var(--border);
+    margin-bottom: 20px;
+  }
+  .speech-bubble {
+    background: #EBF8FF; border-radius: 16px 16px 16px 4px;
+    padding: 14px 18px; display: inline-block; max-width: 80%;
+    font-size: 15px; color: var(--dark); margin-bottom: 16px;
+    position: relative;
+  }
+  .speech-label { font-size: 11px; color: var(--muted); font-weight: 600; margin-bottom: 4px; letter-spacing: 0.5px; text-transform: uppercase; }
+
+  /* ── READING PASSAGE ── */
+  .passage-box {
+    background: var(--card); border-radius: 16px;
+    padding: 28px 32px; box-shadow: var(--shadow);
+    border: 1px solid var(--border); margin-bottom: 24px;
+  }
+  .passage-title {
+    font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700;
+    color: var(--dark); margin-bottom: 16px; padding-bottom: 12px;
+    border-bottom: 2px solid var(--border);
+  }
+  .passage-text {
+    font-size: 15px; line-height: 1.8; color: var(--text);
+  }
+  .passage-text .blank {
+    display: inline-block; min-width: 80px;
+    border-bottom: 2px solid var(--red); color: var(--red);
+    font-weight: 700; text-align: center; padding: 0 4px;
+    vertical-align: bottom;
+  }
+
+  /* ── QUESTION CARD ── */
+  .q-card {
+    background: var(--card); border-radius: 20px;
+    padding: 24px 28px; box-shadow: var(--shadow);
+    border: 1px solid var(--border); margin-bottom: 16px;
+  }
+  .q-number {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: 50%;
+    background: var(--red); color: #fff;
+    font-size: 13px; font-weight: 700; margin-right: 10px; flex-shrink: 0;
+  }
+  .q-stem {
+    font-size: 15px; font-weight: 500; color: var(--dark);
+    margin-bottom: 16px; display: flex; align-items: flex-start; gap: 0;
+    flex-wrap: wrap;
+  }
+  .q-stem-text { flex: 1; line-height: 1.5; }
+  .options { display: grid; gap: 10px; }
+  .option-label {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px; border-radius: 12px;
+    border: 2px solid var(--border); cursor: pointer;
+    transition: all .15s; background: var(--light);
+  }
+  .option-label:hover { border-color: var(--teal); background: #F0FBFC; }
+  .option-label input[type=radio] { display: none; }
+  .option-label.selected { border-color: var(--teal); background: #E0F7FA; }
+  .option-label.correct { border-color: var(--correct); background: #E8F5E9; }
+  .option-label.wrong { border-color: var(--wrong); background: #FFEBEE; }
+  .option-key {
+    width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0;
+    background: var(--border); display: flex; align-items: center;
+    justify-content: center; font-size: 12px; font-weight: 700; color: var(--muted);
+    transition: all .15s;
+  }
+  .selected .option-key { background: var(--teal); color: #fff; }
+  .correct .option-key { background: var(--correct); color: #fff; }
+  .wrong .option-key { background: var(--wrong); color: #fff; }
+  .option-text { font-size: 14px; color: var(--text); }
+
+  /* ── NAV BUTTONS ── */
+  .nav-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 32px; padding: 20px 0;
+  }
+  .btn {
+    padding: 13px 28px; border-radius: 12px; border: none;
+    font-size: 14px; font-weight: 600; cursor: pointer;
+    display: flex; align-items: center; gap: 8px;
+    transition: transform .15s, box-shadow .15s;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn-prev { background: var(--light); color: var(--text); border: 2px solid var(--border); }
+  .btn-prev:hover { border-color: var(--dark); }
+  .btn-next { background: var(--dark); color: #fff; }
+  .btn-next:hover { box-shadow: 0 8px 24px rgba(26,26,46,0.3); }
+  .btn-submit { background: var(--red); color: #fff; }
+  .btn-submit:hover { box-shadow: 0 8px 24px rgba(200,16,46,0.35); }
+
+  /* ── PROGRESS BAR ── */
+  .prog-wrap { margin: 24px 0 0; }
+  .prog-bar-bg {
+    height: 6px; background: var(--border); border-radius: 3px;
+    overflow: hidden;
+  }
+  .prog-bar-fill {
+    height: 100%; background: linear-gradient(90deg, var(--teal), var(--red));
+    border-radius: 3px; transition: width .4s ease;
+  }
+
+  /* ── RESULTS SCREEN ── */
+  #result-screen {
+    display: none; padding: 40px 20px;
+    max-width: 700px; margin: 0 auto; text-align: center;
+  }
+  .result-circle {
+    width: 160px; height: 160px; border-radius: 50%;
+    border: 8px solid var(--teal); margin: 0 auto 24px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: var(--card); box-shadow: 0 0 40px rgba(0,171,187,0.2);
+  }
+  .result-score {
+    font-family: 'Playfair Display', serif; font-size: 52px; font-weight: 900;
+    color: var(--dark); line-height: 1;
+  }
+  .result-total { font-size: 14px; color: var(--muted); }
+  .result-name {
+    font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700;
+    color: var(--dark); margin-bottom: 8px;
+  }
+  .result-msg { font-size: 16px; color: var(--muted); margin-bottom: 32px; line-height: 1.6; }
+  .result-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+    margin-bottom: 32px;
+  }
+  .result-stat {
+    background: var(--card); border-radius: 16px; padding: 20px 16px;
+    box-shadow: var(--shadow); border: 1px solid var(--border);
+  }
+  .result-stat-val {
+    font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 900;
+  }
+  .result-stat-val.green { color: var(--correct); }
+  .result-stat-val.red { color: var(--wrong); }
+  .result-stat-val.blue { color: var(--teal); }
+  .result-stat-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .btn-download {
+    background: var(--red); color: #fff; padding: 16px 36px;
+    border-radius: 14px; border: none; font-size: 16px; font-weight: 700;
+    cursor: pointer; display: inline-flex; align-items: center; gap: 10px;
+    transition: transform .15s, box-shadow .15s;
+  }
+  .btn-download:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(200,16,46,0.35); }
+  .review-title {
+    font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700;
+    margin: 40px 0 20px; text-align: left;
+  }
+
+  /* ── DIVIDER ── */
+  .exam-divider {
+    display: flex; align-items: center; gap: 16px;
+    margin: 40px 0; color: var(--muted); font-size: 13px;
+  }
+  .exam-divider::before, .exam-divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+  .exam-divider-label {
+    background: var(--dark); color: #fff; padding: 6px 16px;
+    border-radius: 20px; font-weight: 700; font-size: 12px; letter-spacing: 1px;
+    white-space: nowrap;
+  }
+
+  /* ── EXAMPLE BOX ── */
+  .example-box {
+    background: #FFFBF0; border: 1px dashed #D4A017;
+    border-radius: 12px; padding: 14px 18px; margin-bottom: 20px;
+    font-size: 14px; color: #6B4F12;
+  }
+  .example-box strong { color: var(--dark); }
+
+  @media (max-width: 600px) {
+    .match-layout { grid-template-columns: 1fr; }
+    .result-grid { grid-template-columns: 1fr 1fr; }
+    .header-inner { padding: 10px 16px; }
+    .logo-text { display: none; }
+  }
+</style>
 </head>
-<body class="p-4 md:p-8">
+<body>
 
-    <div id="setup-screen" class="max-w-md mx-auto bg-white p-8 rounded-xl shadow-lg mt-10">
-        <h1 class="text-2xl font-bold text-blue-800 mb-4">Saber 11 English Mock Test</h1>
-        <p class="text-gray-600 mb-6 italic text-sm">Welcome! This test follows the 2024 ICFES structure. Please enter your name to start.</p>
-        <div class="mb-4">
-            <label class="block text-sm font-semibold mb-2">Nombre Completo del Estudiante:</label>
-            <input type="text" id="student-name" class="w-full p-2 border rounded shadow-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Ej: Juan Pérez">
-        </div>
-        <button onclick="startExam()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition">
-            Comenzar Examen
-        </button>
+<header class="site-header">
+  <div class="header-inner">
+    <div class="logo">
+      <span class="logo-badge">Saber 11°</span>
+      <span class="logo-text">English Test Practice</span>
     </div>
-
-    <div id="exam-container" class="max-w-4xl mx-auto hidden">
-        <header class="flex justify-between items-center mb-8 bg-white p-4 rounded-lg shadow-sm border-b-4 border-blue-500">
-            <div>
-                <h2 class="text-xl font-bold text-gray-800" id="header-part-title">PARTE 1</h2>
-                <p class="text-sm text-gray-500" id="student-display-name"></p>
-            </div>
-            <div class="text-right">
-                <span class="text-sm font-bold text-blue-600">Pregunta <span id="current-q-idx">1</span> de 25</span>
-                <div class="w-32 bg-gray-200 h-2 rounded-full mt-1">
-                    <div id="progress-bar" class="bg-blue-500 h-2 rounded-full" style="width: 0%"></div>
-                </div>
-            </div>
-        </header>
-
-        <!-- Dynamic Content Area -->
-        <div id="question-area" class="bg-white p-6 rounded-xl shadow-md min-h-[400px]">
-            <!-- Content will be injected here via JS -->
-        </div>
-
-        <div class="flex justify-between mt-6">
-            <button id="prev-btn" onclick="prevQuestion()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-6 rounded-lg opacity-50 cursor-not-allowed">
-                Anterior
-            </button>
-            <button id="next-btn" onclick="nextQuestion()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md">
-                Siguiente
-            </button>
-        </div>
+    <div class="progress-pill" id="header-progress" style="display:none">
+      Question <span id="hp-current">1</span> of <span id="hp-total">50</span>
     </div>
+  </div>
+</header>
 
-    <!-- Results Modal -->
-    <div id="result-screen" class="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-lg mt-10 hidden">
-        <h2 class="text-3xl font-bold text-center text-blue-800 mb-2">Test Completed!</h2>
-        <p class="text-center text-gray-500 mb-6">Excellent effort. Here are your results.</p>
-        
-        <div class="grid grid-cols-2 gap-4 mb-8">
-            <div class="bg-blue-50 p-4 rounded-lg text-center border border-blue-100">
-                <span class="block text-sm uppercase text-gray-500 font-bold">Puntaje</span>
-                <span class="text-4xl font-black text-blue-600" id="final-score">0/25</span>
-            </div>
-            <div class="bg-green-50 p-4 rounded-lg text-center border border-green-100">
-                <span class="block text-sm uppercase text-gray-500 font-bold">Porcentaje</span>
-                <span class="text-4xl font-black text-green-600" id="final-percentage">0%</span>
-            </div>
-        </div>
-
-        <div class="space-y-4">
-            <button onclick="downloadPDF()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2">
-                Descargar Reporte PDF para Docente
-            </button>
-            <button onclick="location.reload()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg">
-                Reiniciar Práctica
-            </button>
-        </div>
+<!-- ══════════════════════════ WELCOME SCREEN ══════════════════════════ -->
+<div id="welcome-screen">
+  <span class="welcome-badge">🇨🇴 ICFES · English Module</span>
+  <h1 class="welcome-title">Saber 11° <em>English</em><br>Practice Test</h1>
+  <p class="welcome-sub">
+    This practice includes <strong>50 questions</strong> (Exam 1 + Exam 2) aligned with the CEFR framework,
+    covering vocabulary, reading, grammar, and communication skills.
+  </p>
+  <div class="name-card">
+    <label for="student-name">Enter your full name to begin</label>
+    <input type="text" id="student-name" placeholder="e.g. María González" autocomplete="name">
+    <button class="btn-start" onclick="startExam()">Start Practice Test →</button>
+    <div class="info-row">
+      <span class="info-chip">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        ~30 minutes
+      </span>
+      <span class="info-chip">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        50 questions
+      </span>
+      <span class="info-chip">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        PDF results
+      </span>
     </div>
+  </div>
+</div>
 
-    <script>
-        const apiKey = ""; // Provisioned at runtime
-        const examData = [
-            // PART 1: Signs
-            {
-                part: 1,
-                title: "PARTE 1",
-                instruction: "¿Dónde puede ver estos avisos?",
-                question: "1. Please keep off the grass",
-                options: ["A. in a stadium", "B. in a park", "C. in a library"],
-                correct: 1, // B
-                type: "sign"
-            },
-            {
-                part: 1,
-                title: "PARTE 1",
-                instruction: "¿Dónde puede ver estos avisos?",
-                question: "2. Do not feed the animals",
-                options: ["A. in a school", "B. in a shop", "C. in a zoo"],
-                correct: 2, // C
-                type: "sign"
-            },
-            // PART 2: Matching
-            {
-                part: 2,
-                title: "PARTE 2",
-                instruction: "Relacione las descripciones con la palabra adecuada.",
-                context: "Descriptions about sports items:",
-                question: "3. You use this to hit the ball in tennis.",
-                options: ["A. Ball", "B. Racket", "C. Net", "D. Shoes"],
-                correct: 1,
-                type: "matching"
-            },
-            // PART 3: Conversations
-            {
-                part: 3,
-                title: "PARTE 3",
-                instruction: "Complete las conversaciones.",
-                question: "4. Why don't we go to the cinema tonight?",
-                options: ["A. That sounds great!", "B. I am a student.", "C. Yesterday was fun."],
-                correct: 0,
-                type: "conversation"
-            },
-            {
-                part: 4,
-                title: "PARTE 4: CLOZE",
-                instruction: "Lea el texto y elija la palabra correcta.",
-                text: "The History of Tea. Tea is one of the most popular (5) ____ in the world. It (6) ____ discovered in China thousands of years ago.",
-                question: "5. Choose the best word:",
-                options: ["A. drinks", "B. foods", "C. games"],
-                correct: 0,
-                type: "cloze"
-            },
-            {
-                part: 4,
-                title: "PARTE 4: CLOZE",
-                instruction: "Lea el texto y elija la palabra correcta.",
-                text: "The History of Tea. Tea is one of the most popular (5) drinks in the world. It (6) ____ discovered in China thousands of years ago.",
-                question: "6. Choose the best word:",
-                options: ["A. is", "B. was", "C. were"],
-                correct: 1,
-                type: "cloze"
-            },
-            // PART 5-6-7 Placeholder (Abbreviated for demo, but logic allows all 25)
-            {
-                part: 5,
-                title: "PARTE 5: READING",
-                instruction: "Lea el artículo y responda.",
-                text: "Mount Everest is the highest mountain in the world. Many people try to climb it every year, but it is very dangerous due to the cold and the wind.",
-                question: "7. Why is climbing Mount Everest dangerous?",
-                options: ["A. Because it's too high.", "B. Because of the weather conditions.", "C. Because there are no roads."],
-                correct: 1,
-                imagePrompt: "Mount Everest covered in snow and wind",
-                type: "reading"
-            }
-        ];
+<!-- ══════════════════════════ EXAM SCREEN ══════════════════════════ -->
+<div id="exam-screen" class="wrapper">
+  <div class="prog-wrap">
+    <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px">
+      <span id="prog-label">Progress</span>
+      <span id="prog-pct">0%</span>
+    </div>
+    <div class="prog-bar-bg"><div class="prog-bar-fill" id="prog-fill" style="width:0%"></div></div>
+  </div>
 
-        // Fill remaining mock questions to reach 25 for result calculation
-        for(let i=8; i<=25; i++) {
-            examData.push({
-                part: 7,
-                title: "PARTE 7",
-                instruction: "Complete el texto con la opción correcta.",
-                question: `${i}. Select the best grammar option for sentence ${i}.`,
-                options: ["A. Option A", "B. Option B", "C. Option C"],
-                correct: 0,
-                type: "general"
-            });
-        }
+  <!-- ─────── EXAM 1 ─────── -->
+  <div class="exam-divider"><span class="exam-divider-label">EXAM 1</span></div>
 
-        let currentQuestion = 0;
-        let userAnswers = new Array(examData.length).fill(null);
-        let studentName = "";
+  <!-- PART 1 -->
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <div class="section-info">
+      <div class="section-title">Vocabulary Matching</div>
+      <div class="section-desc">Questions 1–5 · Clothes &amp; Accessories</div>
+    </div>
+    <span class="section-tag">Part 1</span>
+  </div>
+  <div class="instruction-box">
+    Read the descriptions on the left (1–5). Which word on the right (A–G) matches each description?
+    Option <strong>H</strong> is used for the example. Two extra words will be left over.
+  </div>
+  <div class="example-box">
+    <strong>Example (0):</strong> You wear this to know the time. → <strong>H. watch</strong>
+  </div>
 
-        async function generateImage(prompt) {
-            const container = document.getElementById('image-container');
-            if (!container) return;
-            container.innerHTML = `<div class="animate-pulse bg-gray-200 h-48 w-full rounded-lg flex items-center justify-center">Generando imagen...</div>`;
-            
-            try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ instances: { prompt: prompt }, parameters: { sampleCount: 1 } })
-                });
-                const result = await response.json();
-                const imageUrl = `data:image/png;base64,${result.predictions[0].bytesBase64Encoded}`;
-                container.innerHTML = `<img src="${imageUrl}" class="w-full h-48 object-cover rounded-lg shadow-sm mb-4" alt="Visual aid">`;
-            } catch (error) {
-                container.innerHTML = ""; // Silent fail
-            }
-        }
+  <div class="match-layout">
+    <div class="match-col">
+      <div class="match-col-title">Descriptions</div>
+      <div class="match-item"><div class="match-num">1</div><div class="match-text">A person can carry things in one of these.</div></div>
+      <div class="match-item"><div class="match-num">2</div><div class="match-text">You wear this when you go to bed.</div></div>
+      <div class="match-item"><div class="match-num">3</div><div class="match-text">You cover your neck with this.</div></div>
+      <div class="match-item"><div class="match-num">4</div><div class="match-text">Some people need them to see well.</div></div>
+      <div class="match-item"><div class="match-num">5</div><div class="match-text">These are for your feet.</div></div>
+    </div>
+    <div class="match-col">
+      <div class="match-col-title">Word Bank</div>
+      <div class="match-item"><div class="match-letter">A</div><div class="match-text">glasses</div></div>
+      <div class="match-item"><div class="match-letter">B</div><div class="match-text">handbags</div></div>
+      <div class="match-item"><div class="match-letter">C</div><div class="match-text">hat</div></div>
+      <div class="match-item"><div class="match-letter">D</div><div class="match-text">pajamas</div></div>
+      <div class="match-item"><div class="match-letter">E</div><div class="match-text">scarf</div></div>
+      <div class="match-item"><div class="match-letter">F</div><div class="match-text">skirt</div></div>
+      <div class="match-item"><div class="match-letter">G</div><div class="match-text">socks</div></div>
+      <div class="match-item"><div class="match-letter" style="opacity:.4">H</div><div class="match-text" style="opacity:.4">watch (example)</div></div>
+    </div>
+  </div>
 
-        function startExam() {
-            studentName = document.getElementById('student-name').value;
-            if (!studentName.trim()) {
-                alert("Por favor ingresa tu nombre.");
-                return;
-            }
-            document.getElementById('setup-screen').classList.add('hidden');
-            document.getElementById('exam-container').classList.remove('hidden');
-            document.getElementById('student-display-name').innerText = studentName;
-            renderQuestion();
-        }
+  <!-- Match selects for Q1-5 -->
+  <div class="q-card" id="q1-card">
+    <div class="q-stem"><span class="q-number">1</span><span class="q-stem-text">A person can carry things in one of these.</span></div>
+    <div class="options" id="q1-opts"></div>
+  </div>
+  <div class="q-card" id="q2-card">
+    <div class="q-stem"><span class="q-number">2</span><span class="q-stem-text">You wear this when you go to bed.</span></div>
+    <div class="options" id="q2-opts"></div>
+  </div>
+  <div class="q-card" id="q3-card">
+    <div class="q-stem"><span class="q-number">3</span><span class="q-stem-text">You cover your neck with this.</span></div>
+    <div class="options" id="q3-opts"></div>
+  </div>
+  <div class="q-card" id="q4-card">
+    <div class="q-stem"><span class="q-number">4</span><span class="q-stem-text">Some people need them to see well.</span></div>
+    <div class="options" id="q4-opts"></div>
+  </div>
+  <div class="q-card" id="q5-card">
+    <div class="q-stem"><span class="q-number">5</span><span class="q-stem-text">These are for your feet.</span></div>
+    <div class="options" id="q5-opts"></div>
+  </div>
 
-        function renderQuestion() {
-            const data = examData[currentQuestion];
-            const area = document.getElementById('question-area');
-            document.getElementById('current-q-idx').innerText = currentQuestion + 1;
-            document.getElementById('header-part-title').innerText = data.title;
-            document.getElementById('progress-bar').style.width = `${((currentQuestion + 1) / examData.length) * 100}%`;
+  <!-- PART 2 -->
+  <div class="section-header" style="margin-top:40px">
+    <div class="section-num">2</div>
+    <div class="section-info">
+      <div class="section-title">Sign Reading</div>
+      <div class="section-desc">Question 6 · Where can you see these signs?</div>
+    </div>
+    <span class="section-tag">Part 2</span>
+  </div>
+  <div class="example-box">
+    <strong>Example (0):</strong> "Please, put the books on the right desk" → <strong>A. in a school</strong>
+  </div>
+  <div class="q-card" id="q6-card">
+    <div class="sign-display">
+      <svg width="60" height="40" viewBox="0 0 60 40" style="display:block;margin:0 auto 10px">
+        <rect width="60" height="40" rx="4" fill="#E8F4F8" stroke="#90C4D8" stroke-width="2"/>
+        <circle cx="8" cy="10" r="3" fill="#90C4D8"/><circle cx="8" cy="20" r="3" fill="#90C4D8"/>
+        <circle cx="8" cy="30" r="3" fill="#90C4D8"/>
+        <circle cx="52" cy="10" r="3" fill="#90C4D8"/><circle cx="52" cy="20" r="3" fill="#90C4D8"/>
+        <circle cx="52" cy="30" r="3" fill="#90C4D8"/>
+      </svg>
+      <em>Draw a line to complete the snake and color it</em>
+    </div>
+    <div class="q-stem"><span class="q-number">6</span><span class="q-stem-text">Where can you see this sign?</span></div>
+    <div class="options" id="q6-opts"></div>
+  </div>
 
-            let html = `
-                <p class="text-blue-600 font-bold mb-2 uppercase tracking-wide text-xs">${data.instruction}</p>
-                ${data.text ? `<div class="bg-gray-50 p-4 rounded-lg mb-4 text-gray-700 italic border-l-4 border-blue-400">${data.text}</div>` : ''}
-                <div id="image-container"></div>
-                <h3 class="text-lg font-semibold mb-6 text-gray-800">${data.question}</h3>
-                <div class="space-y-3">
-            `;
+  <!-- PART 3 -->
+  <div class="section-header" style="margin-top:40px">
+    <div class="section-num">3</div>
+    <div class="section-info">
+      <div class="section-title">Conversation Completion</div>
+      <div class="section-desc">Questions 7–8 · Complete the conversations</div>
+    </div>
+    <span class="section-tag">Part 3</span>
+  </div>
+  <div class="example-box">
+    <strong>Example:</strong> "Can I use your printer?" → <strong>A. Sure, go ahead!</strong>
+  </div>
+  <div class="q-card" id="q7-card">
+    <div class="speech-bubble">
+      <div class="speech-label">Speaker says:</div>
+      Grandma, shall I hold those bags for you?
+    </div>
+    <div class="q-stem" style="margin-top:8px"><span class="q-number">7</span><span class="q-stem-text">Choose the best response:</span></div>
+    <div class="options" id="q7-opts"></div>
+  </div>
+  <div class="q-card" id="q8-card">
+    <div class="speech-bubble">
+      <div class="speech-label">Speaker says:</div>
+      How much is that umbrella?
+    </div>
+    <div class="q-stem" style="margin-top:8px"><span class="q-number">8</span><span class="q-stem-text">Choose the best response:</span></div>
+    <div class="options" id="q8-opts"></div>
+  </div>
 
-            data.options.forEach((opt, idx) => {
-                const isChecked = userAnswers[currentQuestion] === idx ? 'checked' : '';
-                html += `
-                    <div class="relative">
-                        <input type="radio" name="option" id="opt-${idx}" class="option-input hidden" value="${idx}" ${isChecked} onchange="saveAnswer(${idx})">
-                        <label for="opt-${idx}" class="option-label hover:border-blue-300 transition-colors">
-                            ${opt}
-                        </label>
-                    </div>
-                `;
-            });
+  <!-- PART 4 -->
+  <div class="section-header" style="margin-top:40px">
+    <div class="section-num">4</div>
+    <div class="section-info">
+      <div class="section-title">Gap-Fill Text</div>
+      <div class="section-desc">Questions 9–16 · Coffee reading passage</div>
+    </div>
+    <span class="section-tag">Part 4</span>
+  </div>
+  <div class="instruction-box">Read the text below and select the correct word for each space.</div>
+  <div class="passage-box">
+    <div class="passage-title">☕ COFFEE</div>
+    <div class="passage-text">
+      Coffee is popular around the world. <span class="blank">(0) Over</span> the past centuries, few subjects have been as carefully studied as coffee. Its <span class="blank">(9)</span> important component is caffeine and it has lots of benefits.
+      <br><br>
+      Coffee has been well-known <span class="blank">(10)</span> the beginning of the 14th century, <span class="blank">(11)</span> Sufi Yemenis started using coffee to stay alert during special activities. It became a popular medicine <span class="blank">(12)</span> Europeans in the 1600s.
+      <br><br>
+      Caffeine was first <span class="blank">(13)</span> in the 1800s by Ferdinand Runge, a doctor that found out some effects of coffee on people.
+      <br><br>
+      Some people say <span class="blank">(14)</span> coffee isn't good, but doctors say you <span class="blank">(15)</span> believe this. Thanks to caffeine you don't get hungry. Coffee can also reduce headaches and blood problems.
+      <br><br>
+      <span class="blank">(16)</span> many people believe coffee is bad, studies show it is good for your heart.
+    </div>
+  </div>
+  <div class="q-card" id="q9-card">
+    <div class="q-stem"><span class="q-number">9</span><span class="q-stem-text">Its ________ important component is caffeine.</span></div>
+    <div class="options" id="q9-opts"></div>
+  </div>
+  <div class="q-card" id="q10-card">
+    <div class="q-stem"><span class="q-number">10</span><span class="q-stem-text">Coffee has been well-known ________ the beginning of the 14th century.</span></div>
+    <div class="options" id="q10-opts"></div>
+  </div>
+  <div class="q-card" id="q11-card">
+    <div class="q-stem"><span class="q-number">11</span><span class="q-stem-text">Coffee has been well-known since the beginning of the 14th century, ________ Sufi Yemenis started using coffee.</span></div>
+    <div class="options" id="q11-opts"></div>
+  </div>
+  <div class="q-card" id="q12-card">
+    <div class="q-stem"><span class="q-number">12</span><span class="q-stem-text">It became a popular medicine ________ Europeans in the 1600s.</span></div>
+    <div class="options" id="q12-opts"></div>
+  </div>
+  <div class="q-card" id="q13-card">
+    <div class="q-stem"><span class="q-number">13</span><span class="q-stem-text">Caffeine was first ________ in the 1800s by Ferdinand Runge.</span></div>
+    <div class="options" id="q13-opts"></div>
+  </div>
+  <div class="q-card" id="q14-card">
+    <div class="q-stem"><span class="q-number">14</span><span class="q-stem-text">Some people say ________ coffee isn't good.</span></div>
+    <div class="options" id="q14-opts"></div>
+  </div>
+  <div class="q-card" id="q15-card">
+    <div class="q-stem"><span class="q-number">15</span><span class="q-stem-text">Doctors say you ________ believe [coffee is bad].</span></div>
+    <div class="options" id="q15-opts"></div>
+  </div>
+  <div class="q-card" id="q16-card">
+    <div class="q-stem"><span class="q-number">16</span><span class="q-stem-text">________ many people believe coffee is bad, studies show it is good for your heart.</span></div>
+    <div class="options" id="q16-opts"></div>
+  </div>
 
-            html += `</div>`;
-            area.innerHTML = html;
+  <!-- PART 5 -->
+  <div class="section-header" style="margin-top:40px">
+    <div class="section-num">5</div>
+    <div class="section-info">
+      <div class="section-title">Reading Comprehension</div>
+      <div class="section-desc">Questions 17–23 · James Salter's Days in Film</div>
+    </div>
+    <span class="section-tag">Part 5</span>
+  </div>
+  <div class="passage-box">
+    <div class="passage-title">🎬 JAMES SALTER'S DAYS IN FILM</div>
+    <div class="passage-text">
+      James Salter was a pilot in the United States Air Force. He abandoned the military profession in 1957 after the publication of his first novel, <em>The Hunters</em>. He is best known as a novelist, but during the sixties and seventies, he worked in film making. Salter made documentaries, wrote scripts for films, and even was the director of a film called <em>Three</em>, starring Charlotte Rampling and Sam Waterston.
+      <br><br>
+      <em>Burning the Days</em>, a short story published in <em>The New Yorker</em> in 1997, where Salter tells the story of his life, was adapted into a film called <em>Passionate Falsehoods</em>.
+      <br><br>
+      Salter's time in the film world is both good and bad. In Rome, he met directors and stars. In New York, he explored the city with Robert Redford and enjoyed being famous. Deborah Treisman, and Michael Agger have talked about Salter. Nick Paumgarten in <em>The Last Book</em>, describes Salter's opinion about his film career:
+      <br><br>
+      "Of sixteen scripts for movies, only four were popular. There was money, attractive women, and entrance into rooms where there were stories more for the dinner table than for the page". Salter thought he was wasting his time.
+      <br><br>
+      Perhaps he wasted his time in a larger artistic way, but it still makes for attractive reading. <em>The Last Book</em> is available to everyone in online stores.
+    </div>
+  </div>
+  <div class="example-box"><strong>Example (0):</strong> James Salter is famous for → <strong>A. his books.</strong></div>
+  <div class="q-card" id="q17-card">
+    <div class="q-stem"><span class="q-number">17</span><span class="q-stem-text">James Salter played an important part in the making of movies</span></div>
+    <div class="options" id="q17-opts"></div>
+  </div>
+  <div class="q-card" id="q18-card">
+    <div class="q-stem"><span class="q-number">18</span><span class="q-stem-text"><em>Passionate Falsehoods</em> is</span></div>
+    <div class="options" id="q18-opts"></div>
+  </div>
+  <div class="q-card" id="q19-card">
+    <div class="q-stem"><span class="q-number">19</span><span class="q-stem-text">Salter had nice and difficult times when he was</span></div>
+    <div class="options" id="q19-opts"></div>
+  </div>
+  <div class="q-card" id="q20-card">
+    <div class="q-stem"><span class="q-number">20</span><span class="q-stem-text"><em>The Last Book</em> was written by</span></div>
+    <div class="options" id="q20-opts"></div>
+  </div>
+  <div class="q-card" id="q21-card">
+    <div class="q-stem"><span class="q-number">21</span><span class="q-stem-text">James Salter thinks that his work in the cinema business was</span></div>
+    <div class="options" id="q21-opts"></div>
+  </div>
+  <div class="q-card" id="q22-card">
+    <div class="q-stem"><span class="q-number">22</span><span class="q-stem-text">Reading about James Salter's years in the cinema could be</span></div>
+    <div class="options" id="q22-opts"></div>
+  </div>
+  <div class="q-card" id="q23-card">
+    <div class="q-stem"><span class="q-number">23</span><span class="q-stem-text"><em>The Last Book</em> can be found</span></div>
+    <div class="options" id="q23-opts"></div>
+  </div>
 
-            if (data.imagePrompt) {
-                generateImage(data.imagePrompt);
-            }
+  <!-- PART 6 -->
+  <div class="section-header" style="margin-top:40px">
+    <div class="section-num">6</div>
+    <div class="section-info">
+      <div class="section-title">Extended Reading</div>
+      <div class="section-desc">Questions 24–25 · Swift Pizza and Sandwich House</div>
+    </div>
+    <span class="section-tag">Part 6</span>
+  </div>
+  <div class="passage-box">
+    <div class="passage-title">🍕 SWIFT PIZZA AND SANDWICH HOUSE</div>
+    <div class="passage-text">
+      Today we have the pleasure of showing you the best letter written by our customer Mark. He wins £25 for writing about us this week. He is so happy with the orders at Swift Pizza and Sandwich House that he wants to declare a holiday to celebrate his experience here: "Happy burgerday and Merry Sandwichmas to everyone!" he wrote.
+      <br><br>
+      <em>Wednesday May 18, 2011.</em><br>
+      One typical day I was too tired after working all day long to cook for myself, and I was very hungry. I really wanted something to eat, so I decided to find a burger.
+      <br><br>
+      I ordered a half-pound burger and a lamb and chicken sandwich. I also had some special requests about extra cheese and vegetables.
+      <br><br>
+      Food arrived very fast (less than twenty minutes) and was hot and fresh. The burger was delicious, and left me wanting more - fortunately I had the sandwich left. It left as if it was cut just a minute before I opened it – juicy, fresh, and great.
+      <br><br>
+      Every single special request I made was completely satisfied, 100%!
+      <br><br>
+      And the best thing was that all of the above and some drinks cost me ONLY 10 dollars! If that doesn't say value for money, I don't know what it does.
+      <br><br>
+      It certainly feels great to find new excellent food delivery companies for whenever you don't feel like cooking yourself. I recently had a sad experience with my usual take away restaurant, so I decided to change to something else – and on my first try I got what I wanted!<br>
+      <em>Order now from Swift Pizza and Sandwich House. — Mark</em>
+    </div>
+  </div>
+  <div class="q-card" id="q24-card">
+    <div class="q-stem"><span class="q-number">24</span><span class="q-stem-text">According to the text, the customer</span></div>
+    <div class="options" id="q24-opts"></div>
+  </div>
+  <div class="q-card" id="q25-card">
+    <div class="q-stem"><span class="q-number">25</span><span class="q-stem-text">It can be inferred from the text that Mark</span></div>
+    <div class="options" id="q25-opts"></div>
+  </div>
 
-            // Update nav buttons
-            const prevBtn = document.getElementById('prev-btn');
-            if (currentQuestion === 0) {
-                prevBtn.classList.add('opacity-50', 'cursor-not-allowed');
-            } else {
-                prevBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-            }
+  <!-- ─────── EXAM 2 ─────── -->
+  <div class="exam-divider" style="margin-top:60px"><span class="exam-divider-label">EXAM 2</span></div>
 
-            const nextBtn = document.getElementById('next-btn');
-            nextBtn.innerText = currentQuestion === examData.length - 1 ? "Finalizar" : "Siguiente";
-        }
+  <!-- E2 PART 1 -->
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <div class="section-info">
+      <div class="section-title">Vocabulary Matching</div>
+      <div class="section-desc">Questions 26–28 · Transportation</div>
+    </div>
+    <span class="section-tag">Part 1</span>
+  </div>
+  <div class="instruction-box">
+    Read the descriptions on the left (1–3). Which word on the right (A–G) matches each description?
+    Option <strong>H</strong> is used for the example. Two extra words will be left over.
+  </div>
+  <div class="example-box"><strong>Example (0):</strong> People drive it on a road and it carries big things. → <strong>H. truck</strong></div>
+  <div class="match-layout">
+    <div class="match-col">
+      <div class="match-col-title">Descriptions</div>
+      <div class="match-item"><div class="match-num">1</div><div class="match-text">You often learn to ride it when you are a child.</div></div>
+      <div class="match-item"><div class="match-num">2</div><div class="match-text">People pay to take this public transport by road.</div></div>
+      <div class="match-item"><div class="match-num">3</div><div class="match-text">Many people fly on it to go to a place.</div></div>
+    </div>
+    <div class="match-col">
+      <div class="match-col-title">Word Bank</div>
+      <div class="match-item"><div class="match-letter">A</div><div class="match-text">ambulance</div></div>
+      <div class="match-item"><div class="match-letter">B</div><div class="match-text">boat</div></div>
+      <div class="match-item"><div class="match-letter">C</div><div class="match-text">bike</div></div>
+      <div class="match-item"><div class="match-letter">D</div><div class="match-text">bus</div></div>
+      <div class="match-item"><div class="match-letter">E</div><div class="match-text">motorbike</div></div>
+      <div class="match-item"><div class="match-letter">F</div><div class="match-text">plane</div></div>
+      <div class="match-item"><div class="match-letter">G</div><div class="match-text">train</div></div>
+      <div class="match-item"><div class="match-letter" style="opacity:.4">H</div><div class="match-text" style="opacity:.4">truck (example)</div></div>
+    </div>
+  </div>
+  <div class="q-card" id="q26-card">
+    <div class="q-stem"><span class="q-number">26</span><span class="q-stem-text">You often learn to ride it when you are a child.</span></div>
+    <div class="options" id="q26-opts"></div>
+  </div>
+  <div class="q-card" id="q27-card">
+    <div class="q-stem"><span class="q-number">27</span><span class="q-stem-text">People pay to take this public transport by road.</span></div>
+    <div class="options" id="q27-opts"></div>
+  </div>
+  <div class="q-card" id="q28-card">
+    <div class="q-stem"><span class="q-number">28</span><span class="q-stem-text">Many people fly on it to go to a place.</span></div>
+    <div class="options" id="q28-opts"></div>
+  </div>
 
-        function saveAnswer(idx) {
-            userAnswers[currentQuestion] = idx;
-        }
+  <!-- E2 PART 2 -->
+  <div class="section-header" style="margin-top:40px">
+    <div class="section-num">2</div>
+    <div class="section-info">
+      <div class="section-title">Sign Reading</div>
+      <div class="section-desc">Questions 29–31 · Where can you see these signs?</div>
+    </div>
+    <span class="section-tag">Part 2</span>
+  </div>
+  <div class="example-box"><strong>Example (0):</strong> "Lunch for teachers from 12:00 to 1:00 p.m." → <strong>A. at a school</strong></div>
+  <div class="q-card" id="q29-card">
+    <div class="sign-display"><strong>How do I drive?<br>Phone: 0152067</strong></div>
+    <div class="q-stem"><span class="q-number">29</span><span class="q-stem-text">Where can you see this sign?</span></div>
+    <div class="options" id="q29-opts"></div>
+  </div>
+  <div class="q-card" id="q30-card">
+    <div class="sign-display"><strong>New Toys: Green monsters, angry dolls, and black helicopters</strong></div>
+    <div class="q-stem"><span class="q-number">30</span><span class="q-stem-text">Where can you see this sign?</span></div>
+    <div class="options" id="q30-opts"></div>
+  </div>
+  <div class="q-card" id="q31-card">
+    <div class="sign-display"><em>Please, take the one you want to read</em></div>
+    <div class="q-stem"><span class="q-number">31</span><span class="q-stem-text">Where can you see this sign?</span></div>
+    <div class="options" id="q31-opts"></div>
+  </div>
 
-        function nextQuestion() {
-            if (userAnswers[currentQuestion] === null) {
-                alert("Por favor selecciona una respuesta.");
-                return;
-            }
-            if (currentQuestion < examData.length - 1) {
-                currentQuestion++;
-                renderQuestion();
-            } else {
-                showResults();
-            }
-        }
+  <!-- E2 PART 3 -->
+  <div class="section-header" style="margin-top:40px">
+    <div class="section-num">3</div>
+    <div class="section-info">
+      <div class="section-title">Conversation Completion</div>
+      <div class="section-desc">Questions 32–34 · Complete the three conversations</div>
+    </div>
+    <span class="section-tag">Part 3</span>
+  </div>
+  <div class="example-box"><strong>Example:</strong> "I think I am getting sick." → <strong>A. I am sorry.</strong></div>
+  <div class="q-card" id="q32-card">
+    <div class="speech-bubble"><div class="speech-label">Speaker says:</div>I can't eat a cold sandwich. It is horrible!</div>
+    <div class="q-stem" style="margin-top:8px"><span class="q-number">32</span><span class="q-stem-text">Choose the best response:</span></div>
+    <div class="options" id="q32-opts"></div>
+  </div>
+  <div class="q-card" id="q33-card">
+    <div class="speech-bubble"><div class="speech-label">Speaker says:</div>I am going on vacation to Vancouver!</div>
+    <div class="q-stem" style="margin-top:8px"><span class="q-number">33</span><span class="q-stem-text">Choose the best response:</span></div>
+    <div class="options" id="q33-opts"></div>
+  </div>
+  <div class="q-card" id="q34-card">
+    <div class="speech-bubble"><div class="speech-label">Speaker says:</div>It rained a lot last night!</div>
+    <div class="q-stem" style="margin-top:8px"><span class="q-number">34</span><span class="q-stem-text">Choose the best response:</span></div>
+    <div class="options" id="q34-opts"></div>
+  </div>
 
-        function prevQuestion() {
-            if (currentQuestion > 0) {
-                currentQuestion--;
-                renderQuestion();
-            }
-        }
+  <!-- E2 PART 4 -->
+  <div class="section-header" style="margin-top:40px">
+    <div class="section-num">4</div>
+    <div class="section-info">
+      <div class="section-title">Gap-Fill Text</div>
+      <div class="section-desc">Questions 35–39 · The Ethiopian Wolf</div>
+    </div>
+    <span class="section-tag">Part 4</span>
+  </div>
+  <div class="passage-box">
+    <div class="passage-title">🐺 THE ETHIOPIAN WOLF</div>
+    <div class="passage-text">
+      It is an African animal, <span class="blank">(0) which</span> is called the Simien Jackal. Some scientists have <span class="blank">(35)</span> it is not a real wolf. But studies show that <span class="blank">(36)</span> close relationship to grey wolves and coyotes is evident. <span class="blank">(37)</span> Ethiopian wolves are more similar to grey wolves and coyotes than any other African canines.
+      <br><br>
+      Scientists also believe there are about 450 of them living in wild conditions. The <span class="blank">(38)</span> group of Ethiopian wolves lives <span class="blank">(39)</span> the Bale Mountains National Park.
+      <br><br>
+      The Ethiopian wolf has a special red coat with a white part in the front of the body. It is in size from 1.1 to 1.4 meters. By nature, the Ethiopian wolf looks for food by day, but it is sometimes nocturnal in areas where other animals may hunt it.
+    </div>
+  </div>
+  <div class="q-card" id="q35-card">
+    <div class="q-stem"><span class="q-number">35</span><span class="q-stem-text">Some scientists have ________ it is not a real wolf.</span></div>
+    <div class="options" id="q35-opts"></div>
+  </div>
+  <div class="q-card" id="q36-card">
+    <div class="q-stem"><span class="q-number">36</span><span class="q-stem-text">Studies show that ________ close relationship to grey wolves and coyotes is evident.</span></div>
+    <div class="options" id="q36-opts"></div>
+  </div>
+  <div class="q-card" id="q37-card">
+    <div class="q-stem"><span class="q-number">37</span><span class="q-stem-text">________ Ethiopian wolves are more similar to grey wolves than any other African canines.</span></div>
+    <div class="options" id="q37-opts"></div>
+  </div>
+  <div class="q-card" id="q38-card">
+    <div class="q-stem"><span class="q-number">38</span><span class="q-stem-text">The ________ group of Ethiopian wolves lives in the Bale Mountains National Park.</span></div>
+    <div class="options" id="q38-opts"></div>
+  </div>
+  <div class="q-card" id="q39-card">
+    <div class="q-stem"><span class="q-number">39</span><span class="q-stem-text">The largest group of Ethiopian wolves lives ________ the Bale Mountains National Park.</span></div>
+    <div class="options" id="q39-opts"></div>
+  </div>
 
-        function showResults() {
-            let correctCount = 0;
-            examData.forEach((q, i) => {
-                if (userAnswers[i] === q.correct) correctCount++;
-            });
+  <!-- E2 PART 5 -->
+  <div class="section-header" style="margin-top:40px">
+    <div class="section-num">5</div>
+    <div class="section-info">
+      <div class="section-title">Reading Comprehension</div>
+      <div class="section-desc">Questions 40–44 · My Artistic Adventure</div>
+    </div>
+    <span class="section-tag">Part 5</span>
+  </div>
+  <div class="passage-box">
+    <div class="passage-title">🎨 MY ARTISTIC ADVENTURE</div>
+    <div class="passage-text">
+      When I was a child in Ireland, I went to bed late, and I could not sleep past six. One morning, I found a Spanish television show with a French man who was painting a beautiful countryside with oil paints.
+      <br><br>
+      Right then, I began watching this show. With his quiet voice he explained his natural way of painting, and he quickly made trees and rivers, simply by moving his hand across the canvas. He made it look simple and easy, so I thought I could do it by myself.
+      <br><br>
+      Every Sunday morning, I would try to paint what he was painting on the screen, but I needed oil paints to make my paintings as beautiful as his. I could not buy oil paints; I was only seven, and my parents would not buy them for me. Then I decided to use my mother's cosmetics and paper for my painting. I was ready to paint my first picture.
+      <br><br>
+      After my mum saw what I did with her things, I was told I could not paint again. This put an end to my idea of using food the next time to make a picture. After a while, I stopped watching the French painter. This put an end to my dream of becoming an artist.
+    </div>
+  </div>
+  <div class="example-box"><strong>Example (0):</strong> When she was seven, she slept → <strong>A. for some hours.</strong></div>
+  <div class="q-card" id="q40-card">
+    <div class="q-stem"><span class="q-number">40</span><span class="q-stem-text">Where was the painter from?</span></div>
+    <div class="options" id="q40-opts"></div>
+  </div>
+  <div class="q-card" id="q41-card">
+    <div class="q-stem"><span class="q-number">41</span><span class="q-stem-text">She was mostly excited by the</span></div>
+    <div class="options" id="q41-opts"></div>
+  </div>
+  <div class="q-card" id="q42-card">
+    <div class="q-stem"><span class="q-number">42</span><span class="q-stem-text">How often did she watch the show?</span></div>
+    <div class="options" id="q42-opts"></div>
+  </div>
+  <div class="q-card" id="q43-card">
+    <div class="q-stem"><span class="q-number">43</span><span class="q-stem-text">She could not get oil paints because she</span></div>
+    <div class="options" id="q43-opts"></div>
+  </div>
+  <div class="q-card" id="q44-card">
+    <div class="q-stem"><span class="q-number">44</span><span class="q-stem-text">Stopping painting was</span></div>
+    <div class="options" id="q44-opts"></div>
+  </div>
 
-            document.getElementById('exam-container').classList.add('hidden');
-            document.getElementById('result-screen').classList.remove('hidden');
-            document.getElementById('final-score').innerText = `${correctCount}/${examData.length}`;
-            document.getElementById('final-percentage').innerText = `${Math.round((correctCount/examData.length)*100)}%`;
-        }
+  <!-- E2 PART 6 -->
+  <div class="section-header" style="margin-top:40px">
+    <div class="section-num">6</div>
+    <div class="section-info">
+      <div class="section-title">Extended Reading</div>
+      <div class="section-desc">Questions 45–46 · Jonathan's Trip to Colombia</div>
+    </div>
+    <span class="section-tag">Part 6</span>
+  </div>
+  <div class="passage-box">
+    <div class="passage-title">🇨🇴 JONATHAN'S TRIP TO COLOMBIA</div>
+    <div class="passage-text">
+      I went to Colombia last summer. My journey began on the Caribbean coast and ended on the border with Ecuador. Colombia is a splendid country, extremely diverse and full of wonderful people. I will tell you why.
+      <br><br>
+      In South Colombia there is a city called Pereira, just outside you can find an area where you will see the farm Villa Maria – a hidden paradise that takes a long time to get to. It is a working coffee farm located in the middle of a valley. Coffee and plantain grow as far as the eye can see. The farm is made up of the house and the processing plant. The family business has guests at the house for just $45,000 a night. This includes three home-cooked meals a day, a swimming pool, and as much coffee as you can drink. The scene is quite unbelievable. Bamboo chairs rest on the corners of the Villa, mangos hang from the trees and parrots and birds fly wild.
+      <br><br>
+      A wonderful man named Hector who runs the farm is happy to show guests around the coffee processing plant. By day, the only sounds are of the horses coming down the valley side carrying food. By night, the wildlife comes alive, and depending on the time of the year thunderstorms offer a spectacular light show. For those who wish to escape, Villa Maria is the answer.
+      <br><br>
+      This is just one attraction of many in Colombia. I could write pages on the country and not get bored. I graduate next year and I can't wait to return to this beautiful country. Some of you reading this may feel inspired to do the same.
+    </div>
+  </div>
+  <div class="q-card" id="q45-card">
+    <div class="q-stem"><span class="q-number">45</span><span class="q-stem-text">What is the writer trying to do in this article?</span></div>
+    <div class="options" id="q45-opts"></div>
+  </div>
+  <div class="q-card" id="q46-card">
+    <div class="q-stem"><span class="q-number">46</span><span class="q-stem-text">What can a reader find out from this text?</span></div>
+    <div class="options" id="q46-opts"></div>
+  </div>
 
-        async function downloadPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            let correctCount = 0;
-            const rows = [];
+  <!-- E2 PART 7 -->
+  <div class="section-header" style="margin-top:40px">
+    <div class="section-num">7</div>
+    <div class="section-info">
+      <div class="section-title">Gap-Fill Text</div>
+      <div class="section-desc">Questions 47–50 · Valentine's Day</div>
+    </div>
+    <span class="section-tag">Part 7</span>
+  </div>
+  <div class="passage-box">
+    <div class="passage-title">💝 VALENTINE'S DAY</div>
+    <div class="passage-text">
+      Do you know what <span class="blank">(0) happens</span> on February 14th every year? Many people exchange gifts, chocolates, cards, and flowers. This is done to celebrate Valentine's Day. It's always a lot of fun to get a card or some chocolates, but <span class="blank">(47)</span> do we do this? There is a lot of mystery about this day.
+      <br><br>
+      One of the <span class="blank">(48)</span> says that the original Valentine was a priest. It is said that the king, Claudius II, had forbidden marriage because he thought that only unmarried men made the best soldiers. However, Valentine continued to hold weddings for a lot of young couples in secret. When the King found <span class="blank">(49)</span>, he ordered soldiers to kill Valentine!
+      <br><br>
+      Valentine's Day is now the second biggest holiday for cards and gifts. Women buy <span class="blank">(50)</span> 90% of the cards, but gentlemen still buy the most chocolates and flowers to give as a Valentine's Day present.
+    </div>
+  </div>
+  <div class="q-card" id="q47-card">
+    <div class="q-stem"><span class="q-number">47</span><span class="q-stem-text">It's always a lot of fun…but ________ do we do this?</span></div>
+    <div class="options" id="q47-opts"></div>
+  </div>
+  <div class="q-card" id="q48-card">
+    <div class="q-stem"><span class="q-number">48</span><span class="q-stem-text">One of the ________ says that the original Valentine was a priest.</span></div>
+    <div class="options" id="q48-opts"></div>
+  </div>
+  <div class="q-card" id="q49-card">
+    <div class="q-stem"><span class="q-number">49</span><span class="q-stem-text">When the King found ________, he ordered soldiers to kill Valentine!</span></div>
+    <div class="options" id="q49-opts"></div>
+  </div>
+  <div class="q-card" id="q50-card">
+    <div class="q-stem"><span class="q-number">50</span><span class="q-stem-text">Women buy ________ 90% of the cards.</span></div>
+    <div class="options" id="q50-opts"></div>
+  </div>
 
-            examData.forEach((q, i) => {
-                const isCorrect = userAnswers[i] === q.correct;
-                if (isCorrect) correctCount++;
-                rows.push([
-                    i + 1,
-                    q.title,
-                    q.options[userAnswers[i]].substring(0, 1),
-                    q.options[q.correct].substring(0, 1),
-                    isCorrect ? "CORRECTO" : "INCORRECTO"
-                ]);
-            });
+  <div class="nav-row">
+    <div></div>
+    <button class="btn btn-submit" onclick="submitExam()">
+      Submit Test &amp; See Results
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+    </button>
+  </div>
+</div>
 
-            const score = Math.round((correctCount/examData.length)*100);
+<!-- ══════════════════════════ RESULT SCREEN ══════════════════════════ -->
+<div id="result-screen" class="wrapper">
+  <div style="text-align:center;padding:40px 20px">
+    <div class="result-circle">
+      <div class="result-score" id="res-score">0</div>
+      <div class="result-total" id="res-total">/ 50</div>
+    </div>
+    <div class="result-name" id="res-name"></div>
+    <div class="result-msg" id="res-msg"></div>
+    <div class="result-grid">
+      <div class="result-stat">
+        <div class="result-stat-val green" id="res-correct">0</div>
+        <div class="result-stat-label">✅ Correct</div>
+      </div>
+      <div class="result-stat">
+        <div class="result-stat-val red" id="res-wrong">0</div>
+        <div class="result-stat-label">❌ Wrong</div>
+      </div>
+      <div class="result-stat">
+        <div class="result-stat-val blue" id="res-pct">0%</div>
+        <div class="result-stat-label">📊 Score</div>
+      </div>
+    </div>
+    <button class="btn-download" onclick="downloadPDF()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download PDF Report
+    </button>
+    <p style="margin-top:14px;font-size:13px;color:var(--muted)">Send this PDF to your teacher to review your performance.</p>
+  </div>
 
-            doc.setFontSize(20);
-            doc.text("Reporte de Resultados - Saber 11 Inglés", 14, 20);
-            
-            doc.setFontSize(12);
-            doc.text(`Estudiante: ${studentName}`, 14, 30);
-            doc.text(`Fecha: ${new Date().toLocaleDateString()}`, 14, 37);
-            doc.text(`Puntaje Final: ${correctCount} / ${examData.length} (${score}%)`, 14, 44);
+  <div class="review-title">📋 Answer Review</div>
+  <div id="review-cards"></div>
+</div>
 
-            doc.autoTable({
-                startY: 55,
-                head: [['No.', 'Parte', 'Tu Rpta', 'Correcta', 'Estado']],
-                body: rows,
-                theme: 'striped',
-                headStyles: { fillColor: [59, 130, 246] }
-            });
+<script>
+// ════════════════════════════════════════════════════════
+//  DATA
+// ════════════════════════════════════════════════════════
+const QUESTIONS = [
+  // EXAM 1 – Part 1 (Q1-5)
+  { id:'q1', opts:['A. glasses','B. handbags','C. hat','D. pajamas','E. scarf','F. skirt','G. socks'], ans:'B' },
+  { id:'q2', opts:['A. glasses','B. handbags','C. hat','D. pajamas','E. scarf','F. skirt','G. socks'], ans:'D' },
+  { id:'q3', opts:['A. glasses','B. handbags','C. hat','D. pajamas','E. scarf','F. skirt','G. socks'], ans:'E' },
+  { id:'q4', opts:['A. glasses','B. handbags','C. hat','D. pajamas','E. scarf','F. skirt','G. socks'], ans:'A' },
+  { id:'q5', opts:['A. glasses','B. handbags','C. hat','D. pajamas','E. scarf','F. skirt','G. socks'], ans:'G' },
+  // Part 2 (Q6)
+  { id:'q6', opts:['A. on a rug','B. on a test','C. on a bookcase'], ans:'B' },
+  // Part 3 (Q7-8)
+  { id:'q7', opts:["A. I'm not afraid!","B. Where are you?","C. That's fine."], ans:'C' },
+  { id:'q8', opts:['A. Anything else?','B. 50 dollars.','C. Cash only!'], ans:'B' },
+  // Part 4 (Q9-16)
+  { id:'q9',  opts:['A. much','B. more','C. most'], ans:'C' },
+  { id:'q10', opts:['A. during','B. until','C. since'], ans:'C' },
+  { id:'q11', opts:['A. when','B. which','C. who'], ans:'A' },
+  { id:'q12', opts:['A. among','B. about','C. along'], ans:'A' },
+  { id:'q13', opts:['A. describe','B. described','C. describes'], ans:'B' },
+  { id:'q14', opts:['A. drink','B. drinking','C. drunk'], ans:'B' },
+  { id:'q15', opts:["A. mustn't","B. couldn't","C. wouldn't"], ans:'A' },
+  { id:'q16', opts:['A. While','B. Except','C. Because'], ans:'A' },
+  // Part 5 (Q17-23)
+  { id:'q17', opts:['A. from 1960 to 1979.','B. in 1957.','C. after 1997.'], ans:'A' },
+  { id:'q18', opts:['A. a newspaper.','B. a play.','C. a movie.'], ans:'C' },
+  { id:'q19', opts:['A. an actor.','B. making movies.','C. in a different city.'], ans:'B' },
+  { id:'q20', opts:['A. James Salter.','B. Deborah Treisman.','C. Nick Paumgarten.'], ans:'C' },
+  { id:'q21', opts:['A. not useful.','B. not hard.','C. not usual.'], ans:'A' },
+  { id:'q22', opts:['A. clever enough.','B. just fair.','C. quite interesting.'], ans:'C' },
+  { id:'q23', opts:['A. in museums.','B. at a café.','C. on the web.'], ans:'C' },
+  // Part 6 (Q24-25)
+  { id:'q24', opts:['A. left a £25 tip to the waiters who work there.','B. celebrated Christmas and New Year at this restaurant.','C. found this great restaurant after many attempts.','D. posted an excellent review about this restaurant.'], ans:'D' },
+  { id:'q25', opts:['A. does not like cooking food for himself.','B. almost always eats hamburgers.','C. enjoys eating fast food sometimes.','D. is tired of going to restaurants.'], ans:'C' },
+  // EXAM 2 – Part 1 (Q26-28)
+  { id:'q26', opts:['A. ambulance','B. boat','C. bike','D. bus','E. motorbike','F. plane','G. train'], ans:'C' },
+  { id:'q27', opts:['A. ambulance','B. boat','C. bike','D. bus','E. motorbike','F. plane','G. train'], ans:'D' },
+  { id:'q28', opts:['A. ambulance','B. boat','C. bike','D. bus','E. motorbike','F. plane','G. train'], ans:'F' },
+  // Part 2 (Q29-31)
+  { id:'q29', opts:['A. on a plane','B. on a bus','C. on a boat'], ans:'B' },
+  { id:'q30', opts:['A. in a house','B. in a shop','C. in a zoo'], ans:'B' },
+  { id:'q31', opts:['A. on a stool','B. on a computer','C. on a bookshelf'], ans:'C' },
+  // Part 3 (Q32-34)
+  { id:'q32', opts:['A. I hope so.','B. I agree.','C. I am not.'], ans:'B' },
+  { id:'q33', opts:["A. That's great!","B. I like swimming!","C. You are first!"], ans:'A' },
+  { id:'q34', opts:['A. Did you accept?','B. Did you understand?','C. Did you sleep?'], ans:'C' },
+  // Part 4 (Q35-39)
+  { id:'q35', opts:['A. saying','B. said','C. say'], ans:'B' },
+  { id:'q36', opts:['A. its','B. his','C. your'], ans:'A' },
+  { id:'q37', opts:['A. This','B. That','C. These'], ans:'C' },
+  { id:'q38', opts:['A. larger','B. largest','C. large'], ans:'B' },
+  { id:'q39', opts:['A. in','B. along','C. on'], ans:'A' },
+  // Part 5 (Q40-44)
+  { id:'q40', opts:['A. Ireland','B. Spain','C. France'], ans:'C' },
+  { id:'q41', opts:["A. painter's ability.","B. painter's voice.","C. painter's show."], ans:'A' },
+  { id:'q42', opts:['A. three times a week','B. once a week','C. twice a week'], ans:'B' },
+  { id:'q43', opts:["A. didn't speak Spanish.","B. was too young.","C. always watched TV."], ans:'B' },
+  { id:'q44', opts:["A. the painter's idea.","B. her mother's order.","C. her own decision."], ans:'B' },
+  // Part 6 (Q45-46)
+  { id:'q45', opts:['A. encouraging tourists to visit Colombia.','B. convincing people to buy a Colombian coffee farm.','C. telling readers to run a coffee business in Colombia.','D. inviting tourists to write about places they visit in Colombia.'], ans:'A' },
+  { id:'q46', opts:['A. how to grow coffee on the farm.','B. when the best time to visit the farm is.','C. what the accommodation price includes.','D. which activities tourists prefer to do at the farm.'], ans:'C' },
+  // Part 7 (Q47-50)
+  { id:'q47', opts:['A. where','B. why','C. when','D. what'], ans:'B' },
+  { id:'q48', opts:['A. essays','B. stories','C. reports','D. letters'], ans:'B' },
+  { id:'q49', opts:['A. off','B. in','C. at','D. out'], ans:'D' },
+  { id:'q50', opts:['A. almost','B. only','C. hardly','D. just'], ans:'A' },
+];
 
-            doc.save(`Resultado_Saber11_${studentName.replace(/\s+/g, '_')}.pdf`);
-        }
-    </script>
+let studentName = '';
+let userAnswers = {};
+
+// ════════════════════════════════════════════════════════
+//  BUILD OPTIONS
+// ════════════════════════════════════════════════════════
+function buildOptions() {
+  QUESTIONS.forEach((q, i) => {
+    const num = i + 1;
+    const container = document.getElementById(`${q.id}-opts`);
+    if (!container) return;
+    q.opts.forEach(opt => {
+      const key = opt.charAt(0);
+      const text = opt.slice(3);
+      const lbl = document.createElement('label');
+      lbl.className = 'option-label';
+      lbl.dataset.qid = q.id;
+      lbl.dataset.val = key;
+      lbl.innerHTML = `<input type="radio" name="${q.id}" value="${key}">
+        <span class="option-key">${key}</span>
+        <span class="option-text">${text}</span>`;
+      lbl.addEventListener('click', () => selectOption(q.id, key));
+      container.appendChild(lbl);
+    });
+  });
+}
+
+function selectOption(qid, val) {
+  userAnswers[qid] = val;
+  const opts = document.querySelectorAll(`label[data-qid="${qid}"]`);
+  opts.forEach(lbl => {
+    lbl.classList.toggle('selected', lbl.dataset.val === val);
+  });
+  updateProgress();
+}
+
+function updateProgress() {
+  const answered = Object.keys(userAnswers).length;
+  const total = QUESTIONS.length;
+  const pct = Math.round((answered / total) * 100);
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-pct').textContent = pct + '%';
+  document.getElementById('prog-label').textContent = `${answered} of ${total} answered`;
+  document.getElementById('hp-current').textContent = answered;
+}
+
+// ════════════════════════════════════════════════════════
+//  START
+// ════════════════════════════════════════════════════════
+function startExam() {
+  const nameInput = document.getElementById('student-name').value.trim();
+  if (!nameInput) { alert('Please enter your name to begin.'); return; }
+  studentName = nameInput;
+  document.getElementById('welcome-screen').style.display = 'none';
+  document.getElementById('exam-screen').style.display = 'block';
+  document.getElementById('header-progress').style.display = 'flex';
+  document.getElementById('hp-total').textContent = QUESTIONS.length;
+  window.scrollTo(0, 0);
+  buildOptions();
+}
+
+// ════════════════════════════════════════════════════════
+//  SUBMIT
+// ════════════════════════════════════════════════════════
+function submitExam() {
+  const unanswered = QUESTIONS.length - Object.keys(userAnswers).length;
+  if (unanswered > 0) {
+    if (!confirm(`You have ${unanswered} unanswered question(s). Submit anyway?`)) return;
+  }
+
+  let correct = 0;
+  QUESTIONS.forEach(q => {
+    if (userAnswers[q.id] === q.ans) correct++;
+  });
+  const wrong = QUESTIONS.length - correct;
+  const pct = Math.round((correct / QUESTIONS.length) * 100);
+
+  // Show results
+  document.getElementById('exam-screen').style.display = 'none';
+  document.getElementById('result-screen').style.display = 'block';
+  document.getElementById('res-score').textContent = correct;
+  document.getElementById('res-total').textContent = '/ ' + QUESTIONS.length;
+  document.getElementById('res-name').textContent = studentName;
+  document.getElementById('res-correct').textContent = correct;
+  document.getElementById('res-wrong').textContent = wrong;
+  document.getElementById('res-pct').textContent = pct + '%';
+
+  const msgs = [
+    [0,40,'Keep practicing! Review the passages and vocabulary lists. You can do this! 💪'],
+    [40,60,'Good effort! Focus on grammar patterns and reading comprehension. 📖'],
+    [60,80,'Well done! You have a solid understanding of English. Keep it up! 🌟'],
+    [80,101,'Excellent! Outstanding performance on this Saber 11° practice! 🏆']
+  ];
+  const msg = msgs.find(([lo,hi]) => pct >= lo && pct < hi);
+  document.getElementById('res-msg').textContent = msg[2];
+
+  // Review cards
+  const reviewContainer = document.getElementById('review-cards');
+  QUESTIONS.forEach((q, i) => {
+    const userAns = userAnswers[q.id] || '—';
+    const isCorrect = userAns === q.ans;
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.style.borderLeft = `4px solid ${isCorrect ? 'var(--correct)' : 'var(--wrong)'}`;
+    const opts = document.getElementById(`${q.id}-opts`);
+    card.innerHTML = `
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <span class="q-number" style="background:${isCorrect?'var(--correct)':'var(--wrong)'}">${i+1}</span>
+        <span style="font-size:13px;font-weight:600;color:${isCorrect?'var(--correct)':'var(--wrong)'}">
+          ${isCorrect ? '✅ Correct' : '❌ Wrong'}
+        </span>
+      </div>
+      <div style="font-size:13px;color:var(--muted)">
+        Your answer: <strong style="color:${isCorrect?'var(--correct)':'var(--wrong)'}">${userAns}</strong>
+        ${!isCorrect ? ` &nbsp;·&nbsp; Correct: <strong style="color:var(--correct)">${q.ans}</strong>` : ''}
+      </div>`;
+    reviewContainer.appendChild(card);
+  });
+
+  window.scrollTo(0, 0);
+  // store for PDF
+  window._examResults = { correct, wrong, pct, total: QUESTIONS.length };
+}
+
+// ════════════════════════════════════════════════════════
+//  PDF DOWNLOAD — uses browser print dialog (no CDN needed)
+// ════════════════════════════════════════════════════════
+function downloadPDF() {
+  const { correct, wrong, pct, total } = window._examResults;
+
+  // Build answer rows HTML
+  let rows = '';
+  QUESTIONS.forEach((q, idx) => {
+    const userAns = userAnswers[q.id] || '—';
+    const isOk = userAns === q.ans;
+    const correctOpt = q.opts.find(o => o.startsWith(q.ans + '.')) || q.ans;
+    const userOpt = q.opts.find(o => o.startsWith(userAns + '.')) || userAns;
+    rows += `<tr class="${isOk ? 'ok' : 'bad'}">
+      <td>${idx+1}</td>
+      <td>${userOpt}</td>
+      <td>${correctOpt}</td>
+      <td>${isOk ? '✅ Correct' : '❌ Wrong'}</td>
+    </tr>`;
+  });
+
+  const dateStr = new Date().toLocaleDateString('en-GB', { year:'numeric', month:'long', day:'numeric' });
+
+  const html = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Saber 11° Results – ${studentName}</title>
+<style>
+  @page { size: A4; margin: 18mm 16mm; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, Helvetica, sans-serif; font-size: 10pt; color: #1a1a2e; }
+
+  .header { background: #1a1a2e; color: #fff; padding: 18px 22px 14px; border-radius: 8px 8px 0 0; }
+  .header h1 { font-size: 17pt; font-weight: 900; margin-bottom: 4px; }
+  .header p  { font-size: 9pt; color: #aab; margin-top: 2px; }
+  .red-bar { height: 4px; background: #c8102e; margin-bottom: 18px; }
+
+  .student-name { font-size: 14pt; font-weight: 700; margin-bottom: 14px; }
+
+  .score-box {
+    background: #00aabb; color: #fff; border-radius: 8px;
+    text-align: center; padding: 14px; margin-bottom: 16px;
+  }
+  .score-box .big { font-size: 28pt; font-weight: 900; line-height: 1; }
+  .score-box .sub { font-size: 10pt; margin-top: 4px; }
+
+  .stats { display: flex; gap: 10px; margin-bottom: 20px; }
+  .stat-box {
+    flex: 1; border: 1.5px solid #e2ddd6; border-radius: 6px;
+    text-align: center; padding: 10px 6px;
+  }
+  .stat-val { font-size: 20pt; font-weight: 900; }
+  .stat-val.green { color: #1db954; }
+  .stat-val.red   { color: #e53935; }
+  .stat-val.blue  { color: #00aabb; }
+  .stat-lbl { font-size: 8pt; color: #888; margin-top: 3px; }
+
+  h2 { font-size: 12pt; font-weight: 700; margin-bottom: 10px; color: #1a1a2e; border-bottom: 2px solid #e2ddd6; padding-bottom: 5px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 8.5pt; }
+  thead tr { background: #1a1a2e; color: #fff; }
+  thead th { padding: 5px 8px; text-align: left; font-weight: 700; }
+  tbody tr:nth-child(even) { background: #f5f3ee; }
+  tbody td { padding: 4px 8px; border-bottom: 1px solid #e2ddd6; }
+  tr.ok td:last-child { color: #1db954; font-weight: 700; }
+  tr.bad td:last-child { color: #e53935; font-weight: 700; }
+
+  .footer { margin-top: 22px; text-align: center; font-size: 8pt; color: #aaa; border-top: 1px solid #e2ddd6; padding-top: 10px; }
+</style>
+</head>
+<body>
+  <div class="header">
+    <h1>Saber 11° · English Practice Report</h1>
+    <p>ICFES · English Module &nbsp;·&nbsp; ${dateStr}</p>
+  </div>
+  <div class="red-bar"></div>
+
+  <div class="student-name">Student: ${studentName}</div>
+
+  <div class="score-box">
+    <div class="big">${correct} / ${total}</div>
+    <div class="sub">Overall Score: ${pct}%</div>
+  </div>
+
+  <div class="stats">
+    <div class="stat-box"><div class="stat-val green">${correct}</div><div class="stat-lbl">Correct Answers</div></div>
+    <div class="stat-box"><div class="stat-val red">${wrong}</div><div class="stat-lbl">Wrong Answers</div></div>
+    <div class="stat-box"><div class="stat-val blue">${pct}%</div><div class="stat-lbl">Percentage</div></div>
+  </div>
+
+  <h2>Answer Review</h2>
+  <table>
+    <thead><tr><th>#</th><th>Your Answer</th><th>Correct Answer</th><th>Result</th></tr></thead>
+    <tbody>${rows}</tbody>
+  </table>
+
+  <div class="footer">Saber 11° English Practice · ICFES · Generated automatically for teacher review</div>
+
+  <script>window.onload = function(){ window.print(); }<\/script>
+</body>
+</html>`;
+
+  const blob = new Blob([html], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const win = window.open(url, '_blank');
+  if (!win) {
+    alert('Please allow pop-ups for this page, then click Download PDF again.');
+  }
+}
+</script>
 </body>
 </html>
